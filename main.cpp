@@ -1,11 +1,31 @@
 #include <iostream>
 #include <compare>
+#include "math.h."
+
+void GCD(int& num, int& denom) {
+	int temp_num = abs(num);
+	int temp_denom = abs(denom);
+	
+	while (temp_num != 0 && temp_denom != 0) {
+		if (temp_num > temp_denom) {
+			temp_num %= temp_denom;
+		}
+		else {
+			temp_denom %= temp_num;
+		}
+	}
+
+	int GCD = temp_num + temp_denom;
+	num /= GCD;
+	denom /= GCD;
+}
 
 class Fraction
 {
 public:
 	Fraction() : numerator_(1), denominator_(1) {}
 	Fraction(int numerator, int denominator) : numerator_(numerator), denominator_(denominator) {}
+	~Fraction() = default;
 	double division() { return static_cast<double>(numerator_) / static_cast<double>(denominator_); }
 	auto operator<=>(Fraction& other) {
 		return division() <=> other.division();
@@ -13,104 +33,72 @@ public:
 	bool operator==(Fraction& other) {
 		return operator<=>(other) == 0;
 	}
-	Fraction operator+(Fraction& other) {
+	Fraction& operator+(Fraction& other) {
 		int new_num = (numerator_ * other.denominator_) + (other.numerator_ * denominator_);
 		int new_denom = denominator_* other.denominator_;
 		
-		bool temp = 0;
-		do {
-			temp = false;
-			for (int i = 9; i > 1; --i) {
-				if ((new_num % i == 0) && (new_denom % i == 0))
-				{
-					new_num = new_num / i;
-					new_denom = new_denom / i;
-					temp = true;
-				}
-			}
-		} while (temp);
+		GCD(new_num, new_denom);
 
-		return Fraction(new_num, new_denom);
+		Fraction temp(new_num, new_denom);
+
+		return temp;
 	}
-	Fraction operator-(Fraction& other) {
+	Fraction& operator-(Fraction& other) {
 		int new_num = (numerator_ * other.denominator_) - (other.numerator_ * denominator_);
 		int new_denom = denominator_ * other.denominator_;
 
-		bool temp = 0;
-		do {
-			temp = false;
-			for (int i = 9; i > 1; --i) {
-				if ((new_num % i == 0) && (new_denom % i == 0))
-				{
-					new_num = new_num / i;
-					new_denom = new_denom / i;
-					temp = true;
-				}
-			}
-		} while (temp);
+		GCD(new_num, new_denom);
 
-		return Fraction(new_num, new_denom);
+		Fraction temp(new_num, new_denom);
+
+		return temp;
 	}
-	Fraction operator*(Fraction& other) {
+	Fraction& operator*(Fraction& other) {
 		int new_num = numerator_ * other.numerator_;
 		int new_denom = denominator_ * other.denominator_;
 
-		bool temp = 0;
-		do {
-			temp = false;
-			for (int i = 9; i > 1; --i) {
-				if ((new_num % i == 0) && (new_denom % i == 0))
-				{
-					new_num = new_num / i;
-					new_denom = new_denom / i;
-					temp = true;
-				}
-			}
-		} while (temp);
+		GCD(new_num, new_denom);
 
-		return Fraction(new_num, new_denom);
+		Fraction temp(new_num, new_denom);
+
+		return temp;
 	}
-	Fraction operator/(Fraction& other) {
+	Fraction& operator/(Fraction& other) {
 		int new_num = numerator_ * other.denominator_;
 		int new_denom = denominator_ * other.numerator_;
 
-		bool temp = 0;
-		do {
-			temp = false;
-			for (int i = 9; i > 1; --i) {
-				if ((new_num % i == 0) && (new_denom % i == 0))
-				{
-					new_num = new_num / i;
-					new_denom = new_denom / i;
-					temp = true;
-				}
-			}
-		} while (temp);
+		GCD(new_num, new_denom);
 
-		return Fraction(new_num, new_denom);
+		Fraction temp(new_num, new_denom);
+
+		return temp;
 	}
-	Fraction operator-() {
-		return Fraction(-numerator_, denominator_);
+	Fraction& operator-() {
+		numerator_ *= -1;
+
+		return *this;
 	}
 	Fraction& operator++() { 
 		numerator_ = numerator_ + denominator_;
 
 		return *this;
 	}
-	Fraction& operator++(int) { 
+	Fraction operator++(int) { 
+		Fraction oldValue(numerator_, denominator_);
 		numerator_ = numerator_ + denominator_; 
 
-		return *this;
+		return oldValue;
 	}
 	Fraction& operator--() { 
 		numerator_ = numerator_ - denominator_; 
 
 		return *this;
 	}
-	Fraction& operator--(int) { 
+	Fraction operator--(int) { 
+		Fraction oldValue(numerator_, denominator_);
 		numerator_ = numerator_ - denominator_; 
 
-		return *this;
+		return oldValue;
 	}
 	friend std::ostream& operator<<(std::ostream& output, Fraction& frac);
 	friend std::istream& operator>>(std::istream& input, Fraction& frac);
@@ -141,32 +129,21 @@ std::istream& operator>>(std::istream& input, Fraction& frac) {
 
 int main()
 {
-	Fraction one;
-	Fraction two;
+	Fraction one(3, 4);
+	Fraction two(4, 5);
 
-	std::cin >> one;
-	std::cin >> two;
+	//std::cin >> one;
+	//std::cin >> two;
 	
-	Fraction result = one + two;
-	std::cout << one << " + " << two << " = " << result << std::endl;
+	std::cout << one << " + " << two << " = " << one + two << std::endl;
+	std::cout << one << " - " << two << " = " << one - two << std::endl;
+	std::cout << one << " * " << two << " = " << one * two << std::endl;
+	std::cout << one << " / " << two << " = " << one / two << std::endl;
 
-	result = one - two;
-	std::cout << one << " - " << two << " = " << result << std::endl;
-
-	result = one * two;
-	std::cout << one << " * " << two << " = " << result << std::endl;
-
-	result = one / two;
-	std::cout << one << " / " << two << " = " << result << std::endl;
-
-	std::cout << "++" << one << " * " << two << " = "; 
-	result = ++one * two; 
-	std::cout << result << std::endl;
+	std::cout << "++" << one << " * " << two << " = " << ++one * two << std::endl;
 	std::cout << "Значение дроби 1: " << one << std::endl;
 
-	std::cout << one << "--" << " * " << two << " = ";
-	result = one-- * two; 
-	std::cout << result << std::endl;
+	std::cout << one << "--" << " * " << two << " = " << one-- * two << std::endl;
 	std::cout << "Значение дроби 1: " << one << std::endl;
 
 	return 0;
