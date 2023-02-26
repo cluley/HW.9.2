@@ -74,9 +74,9 @@ public:
 		return temp;
 	}
 	Fraction& operator-() {
-		numerator_ *= -1;
+		Fraction temp(numerator_ * -1, denominator_);
 
-		return *this;
+		return temp;
 	}
 	Fraction& operator++() { 
 		numerator_ = numerator_ + denominator_;
@@ -132,8 +132,8 @@ int main()
 	Fraction one(3, 4);
 	Fraction two(4, 5);
 
-	//std::cin >> one;
-	//std::cin >> two;
+	std::cin >> one;
+	std::cin >> two;
 	
 	std::cout << one << " + " << two << " = " << one + two << std::endl;
 	std::cout << one << " - " << two << " = " << one - two << std::endl;
